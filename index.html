@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图标阴影工具 - 应用PSD阴影参数</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 12px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 22px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .info-box {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .info-box strong { color: #155724; }
+        .main-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px dashed #dee2e6;
+        }
+        .panel-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .upload-area:hover { background: #f0f7ff; border-color: #0056b3; }
+        .upload-area.active { border-color: #28a745; background: #f0fff0; }
+        .upload-icon { font-size: 24px; margin-bottom: 4px; }
+        .upload-text { color: #666; font-size: 11px; }
+        .file-name {
+            margin-top: 6px;
+            padding: 2px 8px;
+            background: #007bff;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            display: inline-block;
+        }
+        input[type="file"] { display: none; }
+        .controls { margin-top: 10px; }
+        .control-group { margin-bottom: 8px; }
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #333;
+        }
+        .control-value {
+            background: #007bff;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+        .checkbox-group input { width: 14px; height: 14px; cursor: pointer; }
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .preview-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+        .preview-item {
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .preview-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .preview-canvas-wrapper {
+            display: inline-block;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            border-radius: 4px;
+            image-rendering: pixelated;
+        }
+        .checkerboard {
+            background-image:
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 10px 10px;
+            background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40,167,69,0.4);
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status-bar {
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            text-align: center;
+            color: #495057;
+            font-size: 12px;
+        }
+        @media (max-width: 968px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .preview-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 图标阴影工具</h1>
+        <p class="subtitle">自动移除背景 → 应用PSD阴影效果 → 输出88×88</p>
+
+        <div class="info-box">
+            <strong>📐 已加载PSD阴影参数：</strong><br>
+            角度：90° | 距离：3px | 模糊：3px | 不透明度：57% | 颜色：RGB(32, 32, 32)
+        </div>
+
+        <div class="main-layout">
+            <div>
+                <div class="panel">
+                    <div class="panel-title">📄 加载PSD模板（可选）</div>
+                    <div class="upload-area" id="templateUpload">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">点击或拖拽模板PNG文件</div>
+                        <div id="templateFileName" style="display:none" class="file-name"></div>
+                    </div>
+                    <input type="file" id="templateInput" accept="image/png">
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-title">🖼️ 最终输出模板（必选）</div>
+                    <div class="upload-area" id="finalTemplateUpload">
+                        <div class="upload-icon">🎯</div>
+                        <div class="upload-text">点击或拖拽最终输出模板PNG</div>
+                        <div id="finalTemplateFileName" style="display:none" class="file-name"></div>
+                    </div>
+                    <input type="file" id="finalTemplateInput" accept="image/png">
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-title">📤 上传图标图片</div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">点击或拖拽图标图片</div>
+                        <div id="fileName" style="display:none" class="file-name"></div>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>背景移除容差</span>
+                            <span class="control-value" id="toleranceValue">2</span>
+                        </div>
+                        <input type="range" id="tolerance" min="0" max="100" value="2">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>图标缩放比例</span>
+                            <span class="control-value" id="scaleValue">80%</span>
+                        </div>
+                        <input type="range" id="scale" min="10" max="100" value="80">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>阴影不透明度</span>
+                            <span class="control-value" id="shadowOpacityValue">57%</span>
+                        </div>
+                        <input type="range" id="shadowOpacity" min="0" max="100" value="57">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>阴影距离</span>
+                            <span class="control-value" id="shadowDistanceValue">3px</span>
+                        </div>
+                        <input type="range" id="shadowDistance" min="0" max="20" value="3">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>阴影模糊</span>
+                            <span class="control-value" id="shadowBlurValue">3px</span>
+                        </div>
+                        <input type="range" id="shadowBlur" min="0" max="30" value="3">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>旋转角度</span>
+                            <span class="control-value" id="rotationValue">0°</span>
+                        </div>
+                        <input type="range" id="rotation" min="-180" max="180" value="0">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="autoRemove" checked>
+                        <label for="autoRemove">自动移除背景</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="centerImage" checked>
+                        <label for="centerImage">居中放置</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-title">👁️ 实时预览</div>
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <div class="preview-label">原始图标</div>
+                        <div class="preview-canvas-wrapper checkerboard">
+                            <canvas id="originalCanvas" width="88" height="88"></canvas>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-label">移除背景后 (88×88)</div>
+                        <div class="preview-canvas-wrapper checkerboard">
+                            <canvas id="removedCanvas" width="88" height="88"></canvas>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-label">移除背景后 (48×48)</div>
+                        <div class="preview-canvas-wrapper checkerboard">
+                            <canvas id="removedCanvas48" width="48" height="48"></canvas>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-label">添加阴影后</div>
+                        <div class="preview-canvas-wrapper checkerboard">
+                            <canvas id="shadowCanvas" width="88" height="88"></canvas>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-label">最终输出 (88×88)</div>
+                        <div class="preview-canvas-wrapper" style="background: white;">
+                            <canvas id="finalCanvas" width="88" height="88"></canvas>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-label">与模板合并后</div>
+                        <div class="preview-canvas-wrapper" style="background: white;">
+                            <canvas id="mergedCanvas" width="88" height="88"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-bar" id="statusBar">
+                    请上传图标图片
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="processBtn" disabled onclick="processImage()">
+                🔄 处理图片
+            </button>
+            <button class="btn btn-success" id="exportBtn" disabled onclick="exportImage()">
+                💾 导出 88×88 PNG
+            </button>
+            <button class="btn btn-success" id="export48Btn" disabled onclick="exportImage48()" style="background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);">
+                💾 导出 48×48 PNG
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const OUTPUT_SIZE = 88;
+        let iconImage = null;
+        let templateImage = null;
+        let finalOutputTemplate = null;  // 最终输出模板
+        let originalWidth = 0;
+        let originalHeight = 0;
+
+        // DOM元素
+        const templateUpload = document.getElementById('templateUpload');
+        const templateInput = document.getElementById('templateInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const removedCanvas = document.getElementById('removedCanvas');
+        const removedCanvas48 = document.getElementById('removedCanvas48');
+        const shadowCanvas = document.getElementById('shadowCanvas');
+        const finalCanvas = document.getElementById('finalCanvas');
+        const mergedCanvas = document.getElementById('mergedCanvas');
+        const statusBar = document.getElementById('statusBar');
+        const processBtn = document.getElementById('processBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const export48Btn = document.getElementById('export48Btn');
+
+        // 控制参数
+        const controls = {
+            tolerance: document.getElementById('tolerance'),
+            scale: document.getElementById('scale'),
+            shadowOpacity: document.getElementById('shadowOpacity'),
+            shadowDistance: document.getElementById('shadowDistance'),
+            shadowBlur: document.getElementById('shadowBlur'),
+            rotation: document.getElementById('rotation'),
+            autoRemove: document.getElementById('autoRemove'),
+            centerImage: document.getElementById('centerImage')
+        };
+
+        // PSD阴影参数
+        const psdShadowParams = {
+            angle: 90,
+            distance: 3,
+            blur: 3,
+            opacity: 0.57,
+            color: { r: 32, g: 32, b: 32 }
+        };
+
+        // 上传事件
+        // 模板上传
+        templateUpload.addEventListener('click', () => templateInput.click());
+        templateUpload.addEventListener('dragover', (e) => { e.preventDefault(); templateUpload.classList.add('active'); });
+        templateUpload.addEventListener('dragleave', () => templateUpload.classList.remove('active'));
+        templateUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            templateUpload.classList.remove('active');
+            if (e.dataTransfer.files.length > 0) loadTemplate(e.dataTransfer.files[0]);
+        });
+        templateInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadTemplate(e.target.files[0]);
+        });
+
+        // 最终输出模板上传
+        const finalTemplateUpload = document.getElementById('finalTemplateUpload');
+        const finalTemplateInput = document.getElementById('finalTemplateInput');
+        finalTemplateUpload.addEventListener('click', () => finalTemplateInput.click());
+        finalTemplateUpload.addEventListener('dragover', (e) => { e.preventDefault(); finalTemplateUpload.classList.add('active'); });
+        finalTemplateUpload.addEventListener('dragleave', () => finalTemplateUpload.classList.remove('active'));
+        finalTemplateUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            finalTemplateUpload.classList.remove('active');
+            if (e.dataTransfer.files.length > 0) loadFinalTemplate(e.dataTransfer.files[0]);
+        });
+        finalTemplateInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadFinalTemplate(e.target.files[0]);
+        });
+
+        // 图标上传
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('active'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('active'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+            if (e.dataTransfer.files.length > 0) loadIcon(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) loadIcon(e.target.files[0]);
+        });
+
+        // 控制参数监听
+        Object.values(controls).forEach(ctrl => {
+            ctrl.addEventListener('input', () => {
+                updateControlValues();
+                if (iconImage) processImage();
+            });
+        });
+
+        function updateControlValues() {
+            document.getElementById('toleranceValue').textContent = controls.tolerance.value;
+            document.getElementById('scaleValue').textContent = controls.scale.value + '%';
+            document.getElementById('shadowOpacityValue').textContent = controls.shadowOpacity.value + '%';
+            document.getElementById('shadowDistanceValue').textContent = controls.shadowDistance.value + 'px';
+            document.getElementById('shadowBlurValue').textContent = controls.shadowBlur.value + 'px';
+            document.getElementById('rotationValue').textContent = controls.rotation.value + '°';
+        }
+
+        function loadTemplate(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    templateImage = img;
+                    templateUpload.classList.add('active');
+                    document.getElementById('templateFileName').textContent = file.name;
+                    document.getElementById('templateFileName').style.display = 'inline-block';
+                    statusBar.textContent = '✓ 已加载模板，请上传图标图片';
+                    if (iconImage) processImage();
+                };
+                img.onerror = () => {
+                    alert('❌ 加载模板失败');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function loadFinalTemplate(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    finalOutputTemplate = img;
+                    finalTemplateUpload.classList.add('active');
+                    document.getElementById('finalTemplateFileName').textContent = file.name;
+                    document.getElementById('finalTemplateFileName').style.display = 'inline-block';
+                    statusBar.textContent = '✓ 已加载最终输出模板，请上传图标图片';
+                    if (iconImage) processImage();
+                };
+                img.onerror = () => {
+                    alert('❌ 加载最终输出模板失败');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function loadIcon(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    iconImage = img;
+                    originalWidth = img.width;
+                    originalHeight = img.height;
+                    
+                    // 显示原始图标（预览）
+                    const ctxOriginal = originalCanvas.getContext('2d');
+                    ctxOriginal.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                    const scalePreview = Math.min(OUTPUT_SIZE / originalWidth, OUTPUT_SIZE / originalHeight);
+                    const wPreview = originalWidth * scalePreview;
+                    const hPreview = originalHeight * scalePreview;
+                    const xPreview = (OUTPUT_SIZE - wPreview) / 2;
+                    const yPreview = (OUTPUT_SIZE - hPreview) / 2;
+                    ctxOriginal.drawImage(img, xPreview, yPreview, wPreview, hPreview);
+                    
+                    uploadArea.classList.add('active');
+                    document.getElementById('fileName').textContent = file.name + ` (${originalWidth}×${originalHeight})`;
+                    document.getElementById('fileName').style.display = 'inline-block';
+                    
+                    processBtn.disabled = false;
+                    statusBar.textContent = '✓ 已加载图片，点击"处理图片"开始处理';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function processImage() {
+            if (!iconImage) return;
+            statusBar.textContent = '⏳ 处理中...';
+
+            setTimeout(() => {
+                // 步骤1: 在原始尺寸上创建画布，并应用旋转
+                const rotation = parseInt(controls.rotation.value);
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = originalWidth;
+                tempCanvas.height = originalHeight;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                // 应用旋转
+                if (rotation !== 0) {
+                    tempCtx.save();
+                    tempCtx.translate(originalWidth / 2, originalHeight / 2);
+                    tempCtx.rotate(rotation * Math.PI / 180);
+                    tempCtx.drawImage(iconImage, -originalWidth / 2, -originalHeight / 2);
+                    tempCtx.restore();
+                } else {
+                    tempCtx.drawImage(iconImage, 0, 0);
+                }
+
+                // 步骤2: 移除背景
+                let imageData = tempCtx.getImageData(0, 0, originalWidth, originalHeight);
+                if (controls.autoRemove.checked) {
+                    imageData = removeBackground(imageData, originalWidth, originalHeight);
+                }
+                tempCtx.putImageData(imageData, 0, 0);
+
+                // 更新原始图标预览（显示旋转后的效果）
+                const ctxOriginal = originalCanvas.getContext('2d');
+                ctxOriginal.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                ctxOriginal.drawImage(tempCanvas, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+
+                // 显示移除背景后的效果（预览88×88）
+                const removedCtx = removedCanvas.getContext('2d');
+                removedCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                removedCtx.drawImage(tempCanvas, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+
+                // 显示移除背景后的效果（预览48×48）
+                const removedCtx48 = removedCanvas48.getContext('2d');
+                removedCtx48.clearRect(0, 0, 48, 48);
+                removedCtx48.drawImage(tempCanvas, 0, 0, 48, 48);
+
+                // 步骤3: 缩放到88x88
+                const scale = parseInt(controls.scale.value) / 100;
+                const scaledWidth = OUTPUT_SIZE * scale;
+                const scaledHeight = OUTPUT_SIZE * scale;
+                
+                const scaledCanvas = document.createElement('canvas');
+                scaledCanvas.width = OUTPUT_SIZE;
+                scaledCanvas.height = OUTPUT_SIZE;
+                const scaledCtx = scaledCanvas.getContext('2d');
+                
+                let x = 0, y = 0;
+                if (controls.centerImage.checked) {
+                    x = (OUTPUT_SIZE - scaledWidth) / 2;
+                    y = (OUTPUT_SIZE - scaledHeight) / 2;
+                }
+                
+                scaledCtx.drawImage(tempCanvas, x, y, scaledWidth, scaledHeight);
+
+                // 步骤4: 添加阴影（如果没有加载模板）
+                let finalImageData;
+                if (!templateImage) {
+                    // 使用算法生成的阴影
+                    finalImageData = addShadow(scaledCtx.getImageData(0, 0, OUTPUT_SIZE, OUTPUT_SIZE));
+                    
+                    // 显示带阴影的效果
+                    const shadowCtx = shadowCanvas.getContext('2d');
+                    shadowCtx.putImageData(finalImageData, 0, 0);
+                } else {
+                    // 步骤4b: 与模板合成（保留模板阴影）
+                    const templateCanvas = document.createElement('canvas');
+                    templateCanvas.width = OUTPUT_SIZE;
+                    templateCanvas.height = OUTPUT_SIZE;
+                    const templateCtx = templateCanvas.getContext('2d');
+                    templateCtx.drawImage(templateImage, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                    
+                    // 将用户图片叠加到模板上
+                    templateCtx.drawImage(scaledCanvas, 0, 0);
+                    
+                    finalImageData = templateCtx.getImageData(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                    
+                    // 显示合成效果
+                    const shadowCtx = shadowCanvas.getContext('2d');
+                    shadowCtx.putImageData(finalImageData, 0, 0);
+                }
+
+                // 步骤5: 最终输出（透明背景）
+                const finalCtx = finalCanvas.getContext('2d');
+                finalCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                finalCtx.putImageData(finalImageData, 0, 0);
+
+                // 步骤6: 与最终输出模板合并
+                const mergedCtx = mergedCanvas.getContext('2d');
+                mergedCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                
+                // 先绘制最终输出模板（底部）
+                if (finalOutputTemplate) {
+                    mergedCtx.drawImage(finalOutputTemplate, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+                }
+                // 再绘制处理后的图片（顶部）
+                mergedCtx.drawImage(finalCanvas, 0, 0);
+
+                exportBtn.disabled = false;
+                export48Btn.disabled = false;
+                statusBar.textContent = `✓ 处理完成！已与最终输出模板合并，输出: 88×88 / 48×48`;
+            }, 50);
+        }
+
+        function removeBackground(imageData, width, height) {
+            const data = imageData.data;
+            const tolerance = parseInt(controls.tolerance.value);
+
+            // 步骤1: 多采样点获取背景颜色（角点+边缘中点+随机边缘点）
+            const bgColors = [];
+            const samplePoints = [];
+
+            // 四个角
+            samplePoints.push([0, 0], [width-1, 0], [0, height-1], [width-1, height-1]);
+            // 边缘中点
+            samplePoints.push([Math.floor(width/2), 0], [Math.floor(width/2), height-1],
+                            [0, Math.floor(height/2)], [width-1, Math.floor(height/2)]);
+            // 边缘采样带
+            for (let i = 0; i < 5; i++) {
+                samplePoints.push([Math.floor(Math.random() * width), 0]);
+                samplePoints.push([Math.floor(Math.random() * width), height-1]);
+                samplePoints.push([0, Math.floor(Math.random() * height)]);
+                samplePoints.push([width-1, Math.floor(Math.random() * height)]);
+            }
+
+            samplePoints.forEach(([x, y]) => {
+                const idx = (y * width + x) * 4;
+                if (data[idx + 3] > 200) {
+                    bgColors.push({ r: data[idx], g: data[idx + 1], b: data[idx + 2] });
+                }
+            });
+
+            if (bgColors.length === 0) return imageData;
+
+            // 使用多个背景色聚类
+            const bgClusters = clusterColors(bgColors, 3);
+            const threshold = tolerance / 100 * 200;
+
+            // 步骤2: 创建alpha掩码
+            const alphaMask = new Float32Array(width * height);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const pixelHSV = rgbToHsv(r, g, b);
+
+                // 检查与每个背景聚类的相似度
+                let minDist = Infinity;
+                let bestMatch = null;
+
+                bgClusters.forEach(cluster => {
+                    const dist = colorDistance(r, g, b, cluster.r, cluster.g, cluster.b);
+                    const hsvDiff = Math.abs(pixelHSV.s - cluster.hsv.s) +
+                                   Math.abs(pixelHSV.v - cluster.hsv.v);
+
+                    // 综合距离
+                    const combinedDist = dist + hsvDiff * 50;
+                    if (combinedDist < minDist) {
+                        minDist = combinedDist;
+                        bestMatch = cluster;
+                    }
+                });
+
+                // 计算alpha值（软边界）
+                let alpha = 255;
+                if (minDist < threshold) {
+                    // 平滑过渡
+                    alpha = Math.min(255, (minDist / threshold) * 255 * 1.5);
+
+                    // 针对低饱和度背景（白色/灰色等）的特殊处理
+                    if (bestMatch && bestMatch.hsv.s < 0.3) {
+                        const valDiff = Math.abs(pixelHSV.v - bestMatch.hsv.v);
+                        const satDiff = Math.abs(pixelHSV.s - bestMatch.hsv.s);
+                        if (valDiff < 0.25 && satDiff < 0.25) {
+                            alpha = Math.min(alpha, (valDiff + satDiff) * 255 * 3);
+                        }
+                    }
+                }
+
+                alphaMask[i / 4] = alpha;
+                data[i + 3] = Math.min(data[i + 3], alpha);
+            }
+
+            // 步骤3: 边缘羽化处理
+            featherEdges(data, alphaMask, width, height, 2);
+
+            // 步骤4: 形态学清理
+            morphologyClean(data, width, height);
+
+            // 步骤5: 再次清理孤立像素
+            removeIsolatedPixels(data, width, height);
+
+            return imageData;
+        }
+
+        // 颜色聚类
+        function clusterColors(colors, k) {
+            if (colors.length === 0) return [{ r: 255, g: 255, b: 255, hsv: { s: 0, v: 1 } }];
+
+            // 简化的K-means
+            let centroids = colors.slice(0, Math.min(k, colors.length)).map(c => ({
+                ...c,
+                hsv: rgbToHsv(c.r, c.g, c.b)
+            }));
+
+            for (let iter = 0; iter < 5; iter++) {
+                const clusters = centroids.map(() => []);
+
+                colors.forEach(color => {
+                    let minDist = Infinity;
+                    let bestIdx = 0;
+                    centroids.forEach((c, idx) => {
+                        const dist = colorDistance(color.r, color.g, color.b, c.r, c.g, c.b);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            bestIdx = idx;
+                        }
+                    });
+                    clusters[bestIdx].push(color);
+                });
+
+                centroids = clusters.map((cluster, idx) => {
+                    if (cluster.length === 0) return centroids[idx];
+                    const avg = cluster.reduce((acc, c) => ({
+                        r: acc.r + c.r, g: acc.g + c.g, b: acc.b + c.b
+                    }), { r: 0, g: 0, b: 0 });
+                    const color = {
+                        r: avg.r / cluster.length,
+                        g: avg.g / cluster.length,
+                        b: avg.b / cluster.length
+                    };
+                    return { ...color, hsv: rgbToHsv(color.r, color.g, color.b) };
+                });
+            }
+
+            return centroids;
+        }
+
+        // 边缘羽化
+        function featherEdges(data, alphaMask, width, height, radius) {
+            const result = new Float32Array(width * height);
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = y * width + x;
+                    let sum = 0;
+                    let count = 0;
+
+                    for (let dy = -radius; dy <= radius; dy++) {
+                        for (let dx = -radius; dx <= radius; dx++) {
+                            const ny = y + dy;
+                            const nx = x + dx;
+                            if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                                const nidx = ny * width + nx;
+                                const weight = 1 / (1 + Math.abs(dx) + Math.abs(dy));
+                                sum += alphaMask[nidx] * weight;
+                                count += weight;
+                            }
+                        }
+                    }
+
+                    result[idx] = sum / count;
+                }
+            }
+
+            for (let i = 0; i < width * height; i++) {
+                data[i * 4 + 3] = Math.min(data[i * 4 + 3], Math.round(result[i]));
+            }
+        }
+
+        // 移除孤立像素
+        function removeIsolatedPixels(data, width, height) {
+            for (let y = 2; y < height - 2; y++) {
+                for (let x = 2; x < width - 2; x++) {
+                    const idx = (y * width + x) * 4 + 3;
+                    if (data[idx] > 0 && data[idx] < 255) {
+                        let opaqueNeighbors = 0;
+                        let totalNeighbors = 0;
+
+                        for (let dy = -2; dy <= 2; dy++) {
+                            for (let dx = -2; dx <= 2; dx++) {
+                                if (dx === 0 && dy === 0) continue;
+                                const nidx = ((y + dy) * width + (x + dx)) * 4 + 3;
+                                if (data[nidx] > 200) opaqueNeighbors++;
+                                totalNeighbors++;
+                            }
+                        }
+
+                        // 如果周围大部分是透明的，则此像素也变透明
+                        if (opaqueNeighbors < totalNeighbors * 0.25) {
+                            data[idx] = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        function colorDistance(r1, g1, b1, r2, g2, b2) {
+            const rmean = (r1 + r2) / 2;
+            const r = r1 - r2;
+            const g = g1 - g2;
+            const b = b1 - b2;
+            return Math.sqrt((2 + rmean / 256) * r * r + 4 * g * g + (2 + (255 - rmean) / 256) * b * b);
+        }
+
+        function rgbToHsv(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const d = max - min;
+            let h, s, v = max;
+            s = max === 0 ? 0 : d / max;
+            if (max === min) {
+                h = 0;
+            } else {
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { h: h * 360, s, v };
+        }
+
+        function morphologyClean(data, width, height) {
+            const tempAlpha = new Uint8Array(width * height);
+            for (let i = 0; i < width * height; i++) {
+                tempAlpha[i] = data[i * 4 + 3];
+            }
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = y * width + x;
+                    if (tempAlpha[idx] < 128) {
+                        let transparentCount = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                if (tempAlpha[(y + dy) * width + (x + dx)] < 128) {
+                                    transparentCount++;
+                                }
+                            }
+                        }
+                        if (transparentCount >= 6) {
+                            data[idx * 4 + 3] = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        function addShadow(imageData) {
+            const width = OUTPUT_SIZE;
+            const height = OUTPUT_SIZE;
+            const data = imageData.data;
+
+            // 使用用户调节的阴影参数
+            const opacity = parseInt(controls.shadowOpacity.value) / 100;
+            const distance = parseInt(controls.shadowDistance.value);
+            const blur = parseInt(controls.shadowBlur.value);
+            const angle = psdShadowParams.angle * Math.PI / 180;
+            const { r: shadowR, g: shadowG, b: shadowB } = psdShadowParams.color;
+
+            const offsetX = Math.round(Math.cos(angle - Math.PI / 2) * distance);
+            const offsetY = Math.round(Math.sin(angle - Math.PI / 2) * distance);
+
+            const alphaMask = new Uint8Array(width * height);
+            for (let i = 0; i < data.length; i += 4) {
+                alphaMask[i / 4] = data[i + 3];
+            }
+
+            const shadowData = new Uint8ClampedArray(width * height * 4);
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    const srcX = x - offsetX;
+                    const srcY = y - offsetY;
+
+                    let shadowAlpha = 0;
+
+                    if (blur === 0) {
+                        if (srcX >= 0 && srcX < width && srcY >= 0 && srcY < height) {
+                            shadowAlpha = alphaMask[srcY * width + srcX] * opacity;
+                        }
+                    } else {
+                        const blurRadius = blur;
+                        let totalWeight = 0;
+                        let weightedAlpha = 0;
+
+                        const startY = Math.max(0, Math.floor(srcY - blurRadius * 2));
+                        const endY = Math.min(height - 1, Math.ceil(srcY + blurRadius * 2));
+                        const startX = Math.max(0, Math.floor(srcX - blurRadius * 2));
+                        const endX = Math.min(width - 1, Math.ceil(srcX + blurRadius * 2));
+
+                        for (let sy = startY; sy <= endY; sy++) {
+                            for (let sx = startX; sx <= endX; sx++) {
+                                const dx = sx - srcX;
+                                const dy = sy - srcY;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                const weight = Math.exp(-(dist * dist) / (2 * blurRadius * blurRadius));
+                                totalWeight += weight;
+                                weightedAlpha += alphaMask[sy * width + sx] * weight;
+                            }
+                        }
+
+                        if (totalWeight > 0) {
+                            shadowAlpha = (weightedAlpha / totalWeight) * opacity;
+                        }
+                    }
+
+                    shadowData[idx] = shadowR;
+                    shadowData[idx + 1] = shadowG;
+                    shadowData[idx + 2] = shadowB;
+                    shadowData[idx + 3] = Math.min(255, shadowAlpha);
+                }
+            }
+
+            const outputData = new Uint8ClampedArray(width * height * 4);
+
+            for (let i = 0; i < width * height * 4; i += 4) {
+                const shadowAlpha = shadowData[i + 3] / 255;
+                const imageAlpha = imageData.data[i + 3] / 255;
+
+                if (shadowAlpha > 0 || imageAlpha > 0) {
+                    if (shadowAlpha > 0) {
+                        outputData[i] = shadowData[i];
+                        outputData[i + 1] = shadowData[i + 1];
+                        outputData[i + 2] = shadowData[i + 2];
+                        outputData[i + 3] = shadowData[i + 3];
+                    }
+
+                    if (imageAlpha > 0) {
+                        const srcR = imageData.data[i];
+                        const srcG = imageData.data[i + 1];
+                        const srcB = imageData.data[i + 2];
+                        const srcA = imageData.data[i + 3];
+
+                        const outA = outputData[i + 3] / 255;
+                        const newAlpha = srcA / 255 + outA * (1 - srcA / 255);
+
+                        if (newAlpha > 0) {
+                            outputData[i] = Math.round((srcR * (srcA / 255) + outputData[i] * outA * (1 - srcA / 255)) / newAlpha);
+                            outputData[i + 1] = Math.round((srcG * (srcA / 255) + outputData[i + 1] * outA * (1 - srcA / 255)) / newAlpha);
+                            outputData[i + 2] = Math.round((srcB * (srcA / 255) + outputData[i + 2] * outA * (1 - srcA / 255)) / newAlpha);
+                            outputData[i + 3] = Math.round(newAlpha * 255);
+                        }
+                    }
+                }
+            }
+
+            return new ImageData(outputData, width, height);
+        }
+
+        function exportImage() {
+            const link = document.createElement('a');
+            link.download = 'icon_88x88_merged.png';
+            link.href = mergedCanvas.toDataURL('image/png');
+            link.click();
+            statusBar.textContent = '✓ 已导出: icon_88x88_merged.png（与模板合并后）';
+        }
+
+        function exportImage48() {
+            const link = document.createElement('a');
+            link.download = 'icon_48x48.png';
+            link.href = removedCanvas48.toDataURL('image/png');
+            link.click();
+            statusBar.textContent = '✓ 已导出: icon_48x48.png（移除背景后）';
+        }
+
+        // 初始化
+        updateControlValues();
+    </script>
+</body>
+</html>
