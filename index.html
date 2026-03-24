@@ -309,6 +309,22 @@
                         <input type="range" id="rotation" min="-180" max="180" value="0">
                     </div>
 
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>水平位置 (X)</span>
+                            <span class="control-value" id="posXValue">0</span>
+                        </div>
+                        <input type="range" id="posX" min="-44" max="44" value="0">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>垂直位置 (Y)</span>
+                            <span class="control-value" id="posYValue">0</span>
+                        </div>
+                        <input type="range" id="posY" min="-44" max="44" value="0">
+                    </div>
+
                     <div class="checkbox-group">
                         <input type="checkbox" id="autoRemove" checked>
                         <label for="autoRemove">自动移除背景</label>
@@ -413,6 +429,8 @@
             shadowDistance: document.getElementById('shadowDistance'),
             shadowBlur: document.getElementById('shadowBlur'),
             rotation: document.getElementById('rotation'),
+            posX: document.getElementById('posX'),
+            posY: document.getElementById('posY'),
             autoRemove: document.getElementById('autoRemove'),
             centerImage: document.getElementById('centerImage')
         };
@@ -483,6 +501,8 @@
             document.getElementById('shadowDistanceValue').textContent = controls.shadowDistance.value + 'px';
             document.getElementById('shadowBlurValue').textContent = controls.shadowBlur.value + 'px';
             document.getElementById('rotationValue').textContent = controls.rotation.value + '°';
+            document.getElementById('posXValue').textContent = controls.posX.value;
+            document.getElementById('posYValue').textContent = controls.posY.value;
         }
 
         function loadTemplate(file) {
@@ -654,13 +674,17 @@
                 // 步骤6: 与最终输出模板合并
                 const mergedCtx = mergedCanvas.getContext('2d');
                 mergedCtx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
-                
+
+                // 获取位置偏移
+                const offsetX = parseInt(controls.posX.value);
+                const offsetY = parseInt(controls.posY.value);
+
                 // 先绘制最终输出模板（底部）
                 if (finalOutputTemplate) {
                     mergedCtx.drawImage(finalOutputTemplate, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
                 }
-                // 再绘制处理后的图片（顶部）
-                mergedCtx.drawImage(finalCanvas, 0, 0);
+                // 再绘制处理后的图片（顶部），应用位置偏移
+                mergedCtx.drawImage(finalCanvas, offsetX, offsetY);
 
                 exportBtn.disabled = false;
                 export48Btn.disabled = false;
